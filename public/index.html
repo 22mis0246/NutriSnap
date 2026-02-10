@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>NutriSnap 🍽️</title>
+
+<style>
+/* =========================================================
+   MODERN BACKGROUND
+========================================================= */
+
+body {
+  font-family: "Poppins", sans-serif;
+  overflow-x: hidden;
+  margin: 0;
+  padding: 40px;
+  text-align: center;
+  background: linear-gradient(135deg, #fff6e9, #ffe7c7);
+  color: #1d5e29;
+}
+
+/* Floating food particles */
+.food-floater {
+  position: fixed;
+  font-size: 60px;
+  opacity: 0.22;
+  animation: floatUp 18s linear infinite;
+  z-index: -5;
+}
+
+@keyframes floatUp {
+  0% { transform: translateY(120vh) rotate(0deg); }
+  100% { transform: translateY(-150vh) rotate(360deg); }
+}
+
+/* Spice clouds */
+.spice-cloud {
+  position: fixed;
+  width: 250px;
+  height: 250px;
+  background: radial-gradient(circle, rgba(249, 250, 251, 0.35), rgba(255,180,80,0));
+  border-radius: 50%;
+  filter: blur(40px);
+  animation: cloudMove 25s infinite ease-in-out;
+  z-index: -10;
+}
+
+@keyframes cloudMove {
+  0% { transform: translate(-10vw, 10vh); }
+  50% { transform: translate(40vw, -20vh); }
+  100% { transform: translate(-10vw, 10vh); }
+}
+
+/* =========================================================
+   INPUT FIELD (UPDATED)
+========================================================= */
+
+input {
+  padding: 14px;
+  width: 280px;
+  font-size: 1.2em;
+  border-radius: 12px;
+  border: 2px solid #bbb;
+  background: rgba(255,255,255,0.9);
+  transition: 0.3s;
+  box-shadow: 0 0 10px rgba(150,150,150,0.3);
+}
+
+input:focus {
+  border-color: #4e9cff;
+  box-shadow: 0 0 18px #4e9cff;
+  outline: none;
+  transform: scale(1.03);
+}
+
+/* =========================================================
+   NEON BUTTONS
+========================================================= */
+
+button {
+  padding: 12px 18px;
+  border-radius: 10px;
+  font-size: 1em;
+  border: none;
+  cursor: pointer;
+  transition: 0.25s;
+}
+
+#addMealBtn {
+  background: #4e9cff;
+  color: white;
+  box-shadow: 0 0 14px #4e9cff;
+}
+#addMealBtn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 22px #1a73e8;
+}
+
+#clearBtn {
+  background: #ff5757;
+  color: white;
+  box-shadow: 0 0 14px #ff5757;
+  margin-left: 8px;
+}
+#clearBtn:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 22px #ff1c1c;
+}
+
+/* =========================================================
+   GLASS CARD UI
+========================================================= */
+
+#mealList {
+  margin: 40px auto;
+  width: 480px;
+  padding: 25px;
+  border-radius: 20px;
+
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* =========================================================
+   MEAL ROW + ERASE BUTTON (UPDATED)
+========================================================= */
+
+.meal-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  border-bottom: 1px solid #ddd;
+  font-size: 1.08em;
+}
+
+.delete-btn {
+  padding: 6px 12px;
+  background: #ff3d3d;
+  color: white;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+
+  /* NEW GLOW EFFECT */
+  box-shadow: 0 0 10px #ff3d3d;
+  transition: 0.25s;
+}
+
+.delete-btn:hover {
+  background: #ff1c1c;
+  transform: scale(1.12);
+  box-shadow: 0 0 20px #ff1c1c;
+}
+
+/* =========================================================
+   Progress bar + Toast
+========================================================= */
+
+#progressBar {
+  height: 10px;
+  background: #ddd;
+  border-radius: 10px;
+  margin-top: 12px;
+}
+#progress {
+  height: 10px;
+  width: 0%;
+  border-radius: 10px;
+  background: #2ecc71;
+  box-shadow: 0 0 8px #2ecc71;
+  transition: width 0.6s ease;
+}
+
+#toast {
+  position: fixed;
+  bottom: 25px;
+  right: 25px;
+  background: #32a852;
+  color: white;
+  padding: 14px 20px;
+  border-radius: 10px;
+  opacity: 0;
+  transform: translateY(30px);
+  transition: 0.4s;
+}
+#toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+</head>
+
+<body>
+
+<!-- FLOATING EMOJIS -->
+<div class="food-floater" style="left:5%; animation-delay:0s;">🍕</div>
+<div class="food-floater" style="left:25%; animation-delay:4s;">🍔</div>
+<div class="food-floater" style="left:45%; animation-delay:8s;">🍩</div>
+<div class="food-floater" style="left:65%; animation-delay:2s;">🍛</div>
+<div class="food-floater" style="left:85%; animation-delay:6s;">🥘</div>
+
+<!-- Spice clouds -->
+<div class="spice-cloud" style="left:10%; top:50%;"></div>
+<div class="spice-cloud" style="left:70%; top:20%; animation-delay:6s;"></div>
+
+<h1>🍽️ Naveen’s NutriSnap — Smart Meal Tracker</h1>
+<p>Track your meals & calories (e.g., 1 dosa, 1 chicken biryani)</p>
+
+<input id="mealInput" placeholder="Enter your meal">
+<button id="addMealBtn">➕ Add Meal</button>
+<button id="clearBtn">🧹 Clear All</button>
+
+<div id="mealList"></div>
+<div id="toast"></div>
+
+<script>
+/* Toast */
+function showToast(msg, color="#32a852") {
+  const toast = document.getElementById("toast");
+  toast.textContent = msg;
+  toast.style.background = color;
+  toast.classList.add("show");
+  setTimeout(()=>toast.classList.remove("show"), 2000);
+}
+
+/* Load Meals */
+async function loadMeals() {
+  const res = await fetch("/getMeals");
+  renderMeals(await res.json());
+}
+
+/* Add meal */
+async function addMealFlow() {
+  const input = document.getElementById("mealInput");
+  const text = input.value.trim();
+  if (!text) return showToast("Enter a valid meal!", "#ff3d3d");
+
+  const lookup = await (await fetch("/lookupCalories/"+encodeURIComponent(text))).json();
+  let calories = lookup.found ? lookup.calories : null;
+
+  if (!lookup.found) {
+    const manual = prompt(`${text} not found.\nEnter calories:`);
+    if (manual === null) return;
+    calories = Number(manual);
+
+    await fetch("/addCalEntry",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json"},
+      body: JSON.stringify({ key:text, calories })
+    });
+  }
+
+  await fetch("/addMeal",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json"},
+    body: JSON.stringify({ meal:text, calories })
+  });
+
+  input.value = "";
+  showToast(`${text} added ✔`);
+  loadMeals();
+}
+
+/* Delete */
+async function deleteMeal(i, name) {
+  await fetch("/deleteMeal",{
+    method:"DELETE",
+    headers:{ "Content-Type":"application/json"},
+    body: JSON.stringify({ index:i })
+  });
+
+  showToast(`Removed ${name}`, "#ff3d3d");
+  loadMeals();
+}
+
+/* Clear */
+async function clearAllMeals() {
+  await fetch("/clearMeals",{ method:"DELETE" });
+  loadMeals();
+  showToast("All meals cleared!", "#ff3d3d");
+}
+
+/* Render UI */
+function renderMeals(meals) {
+  const list = document.getElementById("mealList");
+  if (!meals.length) {
+    list.innerHTML="<p>No meals added</p>";
+    return;
+  }
+
+  let total = meals.reduce((s,m)=>s+(m.calories||0),0);
+  let percent = Math.min((total/2000)*100,100);
+
+  list.innerHTML = `
+    <h3>Today's Meals</h3>
+    ${meals.map((m,i)=>`
+      <div class="meal-item">
+        <span>${m.name}</span>
+        <span>${m.calories?m.calories+" kcal":"N/A"}</span>
+        <button class="delete-btn" onclick="deleteMeal(${i}, '${m.name}')">Erase</button>
+      </div>
+    `).join("")}
+
+    <hr>
+    <p><b>Total:</b> ${total} / 2000 kcal</p>
+    <div id="progressBar"><div id="progress" style="width:${percent}%"></div></div>
+  `;
+}
+
+document.getElementById("addMealBtn").onclick = addMealFlow;
+document.getElementById("clearBtn").onclick = clearAllMeals;
+window.onload = loadMeals;
+</script>
+
+</body>
+</html>
